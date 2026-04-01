@@ -1,121 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import type { TabId } from './types';
+import { useMockData } from './hooks/useMockData';
+import { NavRail } from './components/NavRail';
+import { ModelPage } from './pages/ModelPage';
+import { RuntimePage } from './pages/RuntimePage';
+import { SkillToolPage } from './pages/SkillToolPage';
+import { DiscordPage } from './pages/DiscordPage';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeTab, setActiveTab] = useState<TabId>('model');
+  const data = useMockData();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="backdrop">
+      <div className="plate">
+        <NavRail activeTab={activeTab} onTabChange={setActiveTab} />
+        <div className="plate-content">
+          {activeTab === 'model' && (
+            <ModelPage
+              data={data.model.data}
+              onModelPathChange={data.model.setModelPath}
+              onModelSelect={data.model.setSelectedModel}
+              onHyperparamChange={data.model.updateHyperparam}
+              onHyperparamReset={data.model.resetHyperparam}
+            />
+          )}
+          {activeTab === 'runtime' && (
+            <RuntimePage data={data.runtime.data} />
+          )}
+          {activeTab === 'skill' && (
+            <SkillToolPage
+              items={data.skills.items}
+              selectedId={data.skills.selectedId}
+              onSelect={data.skills.setSelectedId}
+            />
+          )}
+          {activeTab === 'tool' && (
+            <SkillToolPage
+              items={data.tools.items}
+              selectedId={data.tools.selectedId}
+              onSelect={data.tools.setSelectedId}
+            />
+          )}
+          {activeTab === 'discord' && (
+            <DiscordPage
+              data={data.discord.data}
+              onBotTokenChange={data.discord.setBotToken}
+              onAdminRoleIdChange={data.discord.setAdminRoleId}
+              onAddChannelId={data.discord.addChannelId}
+              onRemoveChannelId={data.discord.removeChannelId}
+            />
+          )}
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;

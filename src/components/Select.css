@@ -1,0 +1,60 @@
+.select-field {
+  position: relative;
+  width: 100%;
+}
+
+.select-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 40px 0 16px;
+  font: var(--md-sys-typescale-body-lg);
+  color: var(--md-sys-color-on-surface);
+  background: transparent;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-xs);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color var(--md-sys-motion-duration) var(--md-sys-motion-easing);
+}
+
+.select-input:hover {
+  border-color: var(--md-sys-color-on-surface);
+}
+
+.select-input:focus {
+  border-color: var(--md-sys-color-primary);
+  border-width: 2px;
+  padding: 0 39px 0 15px;
+}
+
+.select-input option {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+
+.select-label {
+  position: absolute;
+  left: 12px;
+  top: 0;
+  transform: translateY(-50%);
+  font: var(--md-sys-typescale-label);
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+  background: var(--md-sys-color-surface);
+  padding: 0 4px;
+}
+
+.select-input:focus + .select-label {
+  color: var(--md-sys-color-primary);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+}

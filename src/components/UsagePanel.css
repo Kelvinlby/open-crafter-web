@@ -1,0 +1,44 @@
+.usage-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.usage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.usage-label {
+  font: var(--md-sys-typescale-title);
+  color: var(--md-sys-color-on-surface);
+}
+
+.usage-value {
+  font: var(--md-sys-typescale-label);
+  color: var(--md-sys-color-primary);
+}
+
+.usage-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--md-sys-color-surface-container-highest);
+  overflow: hidden;
+}
+
+.usage-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--md-sys-color-primary);
+  transition: width 300ms var(--md-sys-motion-easing);
+}
+
+.usage-detail {
+  font: var(--md-sys-typescale-label);
+  color: var(--md-sys-color-on-surface-variant);
+}

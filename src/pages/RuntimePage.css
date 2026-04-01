@@ -1,0 +1,10 @@
+.runtime-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.usage-row {
+  display: flex;
+  gap: 12px;
+}

@@ -1,0 +1,54 @@
+.text-field {
+  position: relative;
+  width: 100%;
+}
+
+.text-field-input {
+  width: 100%;
+  height: 48px;
+  padding: 16px 16px 8px;
+  font: var(--md-sys-typescale-body-lg);
+  color: var(--md-sys-color-on-surface);
+  background: transparent;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-xs);
+  outline: none;
+  transition: border-color var(--md-sys-motion-duration) var(--md-sys-motion-easing);
+}
+
+.text-field-input:hover {
+  border-color: var(--md-sys-color-on-surface);
+}
+
+.text-field-input:focus {
+  border-color: var(--md-sys-color-primary);
+  border-width: 2px;
+  padding: 15px 15px 7px;
+}
+
+.text-field-label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font: var(--md-sys-typescale-body-lg);
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+  transition:
+    top var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    font-size var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    color var(--md-sys-motion-duration) var(--md-sys-motion-easing);
+  background: var(--md-sys-color-surface);
+  padding: 0 4px;
+}
+
+.text-field-input:focus + .text-field-label,
+.text-field-input:not(:placeholder-shown) + .text-field-label {
+  top: 0;
+  font: var(--md-sys-typescale-label);
+  color: var(--md-sys-color-primary);
+}
+
+.text-field-input:not(:focus):not(:placeholder-shown) + .text-field-label {
+  color: var(--md-sys-color-on-surface-variant);
+}

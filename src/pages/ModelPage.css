@@ -1,0 +1,47 @@
+.model-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hyperparam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hyperparam-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hyperparam-title {
+  width: 120px;
+  flex-shrink: 0;
+  font: var(--md-sys-typescale-body-lg);
+  color: var(--md-sys-color-on-surface);
+}
+
+.hyperparam-value {
+  width: 80px;
+  height: 36px;
+  padding: 0 8px;
+  font: var(--md-sys-typescale-body);
+  color: var(--md-sys-color-on-surface);
+  background: transparent;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-xs);
+  outline: none;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.hyperparam-value::-webkit-inner-spin-button,
+.hyperparam-value::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.hyperparam-value:focus {
+  border-color: var(--md-sys-color-primary);
+}
