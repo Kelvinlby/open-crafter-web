@@ -24,8 +24,7 @@
 
 .select-input:focus {
   border-color: var(--md-sys-color-primary);
-  border-width: 2px;
-  padding: 0 39px 0 15px;
+  outline: 1px solid var(--md-sys-color-primary);
 }
 
 .select-input option {
