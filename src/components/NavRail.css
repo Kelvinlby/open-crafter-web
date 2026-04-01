@@ -39,16 +39,26 @@
   height: 32px;
   border-radius: var(--md-sys-shape-corner-lg);
   font-size: 24px;
-  transition: background var(--md-sys-motion-duration) var(--md-sys-motion-easing);
+  font-variation-settings: 'FILL' 0;
+  transition:
+    background var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    font-variation-settings var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    transform 120ms ease;
 }
 
 .nav-rail-item:hover .nav-rail-icon {
   background: var(--md-sys-color-surface-container-high);
 }
 
+.nav-rail-item:active .nav-rail-icon {
+  transform: scale(0.92);
+}
+
 .nav-rail-item.active .nav-rail-icon {
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-primary);
+  font-variation-settings: 'FILL' 1;
+  font-weight: 300;
 }
 
 .nav-rail-label {

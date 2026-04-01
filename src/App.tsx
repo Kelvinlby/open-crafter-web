@@ -16,7 +16,7 @@ function App() {
     <div className="backdrop">
       <div className="plate">
         <NavRail activeTab={activeTab} onTabChange={setActiveTab} />
-        <div className="plate-content">
+        <div className="plate-content" key={activeTab}>
           {activeTab === 'model' && (
             <ModelPage
               data={data.model.data}

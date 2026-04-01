@@ -25,11 +25,17 @@
   cursor: pointer;
   text-align: left;
   color: var(--md-sys-color-on-surface);
-  transition: background var(--md-sys-motion-duration) var(--md-sys-motion-easing);
+  transition:
+    background var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    transform 120ms ease;
 }
 
 .list-panel-item:hover {
   background: var(--md-sys-color-surface-container-high);
+}
+
+.list-panel-item:active {
+  transform: scale(0.97);
 }
 
 .list-panel-item.active {

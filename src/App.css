@@ -1,3 +1,30 @@
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes plate-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .backdrop {
   position: fixed;
   inset: 0;
@@ -7,6 +34,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background: rgba(0, 0, 0, 0.25);
+  animation: backdrop-in 400ms ease-out;
 }
 
 .plate {
@@ -17,10 +45,12 @@
   box-shadow: var(--md-sys-elevation-2);
   display: flex;
   overflow: hidden;
+  animation: plate-in 500ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 .plate-content {
   flex: 1;
   overflow-y: auto;
   padding: 24px 28px;
+  animation: page-in 250ms cubic-bezier(0.2, 0, 0, 1) both;
 }
