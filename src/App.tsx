@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { TabId } from './types';
-import { useMockData } from './hooks/useMockData';
+import { useBackendData } from './hooks/useBackendData';
 import { NavRail } from './components/NavRail';
 import { ModelPage } from './pages/ModelPage';
 import { RuntimePage } from './pages/RuntimePage';
@@ -10,7 +10,11 @@ import './App.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>('model');
-  const data = useMockData();
+  const data = useBackendData();
+
+  if (data.loading) {
+    return <div className="backdrop"><div className="plate">Loading...</div></div>;
+  }
 
   return (
     <div className="backdrop">
