@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type { RuntimePageData } from '../types';
 import { UsagePanel } from '../components/UsagePanel';
 import { Select } from '../components/Select';
@@ -8,6 +9,12 @@ interface RuntimePageProps {
 }
 
 export function RuntimePage({ data }: RuntimePageProps) {
+  const [selectedDevice, setSelectedDevice] = useState<string>(data.selectedDevice);
+
+  useEffect(() => {
+    setSelectedDevice(data.selectedDevice);
+  }, [data.selectedDevice]);
+
   return (
     <div className="runtime-page">
       <div className="usage-row">
@@ -17,9 +24,9 @@ export function RuntimePage({ data }: RuntimePageProps) {
       </div>
       <Select
         label="Inference Device"
-        value={data.selectedDevice}
+        value={selectedDevice}
         options={data.availableDevices}
-        onChange={() => {}}
+        onChange={setSelectedDevice}
       />
     </div>
   );
