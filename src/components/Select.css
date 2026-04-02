@@ -13,6 +13,8 @@
   border: 1px solid var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-xs);
   outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   cursor: pointer;
   transition: border-color var(--md-sys-motion-duration) var(--md-sys-motion-easing);
@@ -48,7 +50,8 @@
   color: var(--md-sys-color-primary);
 }
 
-.select-arrow {
+.select-field::after {
+  content: "\25BC";
   position: absolute;
   right: 16px;
   top: 50%;

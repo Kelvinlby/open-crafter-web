@@ -10,10 +10,15 @@ export interface HyperparamConfig {
   defaultValue: number;
 }
 
+export interface ModelOption {
+  folder: string;
+  name: string;
+}
+
 export interface ModelPageData {
   modelPath: string;
   selectedModel: string;
-  availableModels: string[];
+  availableModels: ModelOption[];
   hyperparams: HyperparamConfig[];
 }
 

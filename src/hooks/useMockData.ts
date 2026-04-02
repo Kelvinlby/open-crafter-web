@@ -5,8 +5,14 @@ export function useMockData() {
   // Model
   const [modelData, setModelData] = useState<ModelPageData>({
     modelPath: '/models/llama-3-8b-instruct',
-    selectedModel: 'llama-3-8b-instruct',
-    availableModels: ['llama-3-8b-instruct', 'llama-3-70b', 'mistral-7b-v0.3', 'qwen2-7b', 'phi-3-mini'],
+    selectedModel: '/models/llama-3-8b-instruct',
+    availableModels: [
+      { folder: '/models/llama-3-8b-instruct', name: 'Llama 3 8B Instruct' },
+      { folder: '/models/llama-3-70b', name: 'Llama 3 70B' },
+      { folder: '/models/mistral-7b-v0.3', name: 'Mistral 7B v0.3' },
+      { folder: '/models/qwen2-7b', name: 'Qwen2 7B' },
+      { folder: '/models/phi-3-mini', name: 'Phi 3 Mini' },
+    ],
     hyperparams: [
       { id: 'temperature', title: 'Temperature', value: 0.7, min: 0, max: 2, step: 0.05, defaultValue: 0.7 },
       { id: 'top_p', title: 'Top P', value: 0.9, min: 0, max: 1, step: 0.01, defaultValue: 0.9 },

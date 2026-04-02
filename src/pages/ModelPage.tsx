@@ -27,7 +27,7 @@ export function ModelPage({
       <Select
         label="Model"
         value={data.selectedModel}
-        options={data.availableModels}
+        options={data.availableModels.map((m) => ({ value: m.folder, label: m.name }))}
         onChange={onModelSelect}
       />
       <Divider />

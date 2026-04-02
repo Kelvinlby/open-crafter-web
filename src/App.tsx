@@ -12,8 +12,13 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabId>('model');
   const data = useBackendData();
 
+
   if (data.loading) {
-    return <div className="backdrop"><div className="plate">Loading...</div></div>;
+    return (
+      <div className="backdrop">
+        <div className="plate" />
+      </div>
+    );
   }
 
   return (
@@ -31,7 +36,7 @@ function App() {
             />
           )}
           {activeTab === 'runtime' && (
-            <RuntimePage data={data.runtime.data} />
+            <RuntimePage data={data.runtime.data} onDeviceChange={data.runtime.setSelectedDevice} />
           )}
           {activeTab === 'skill' && (
             <SkillToolPage
