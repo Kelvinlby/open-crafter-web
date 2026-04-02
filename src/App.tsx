@@ -56,9 +56,10 @@ function App() {
             <DiscordPage
               data={data.discord.data}
               onBotTokenChange={data.discord.setBotToken}
-              onAdminRoleIdChange={data.discord.setAdminRoleId}
-              onAddChannelId={data.discord.addChannelId}
-              onRemoveChannelId={data.discord.removeChannelId}
+              onAdminChannelIdChange={data.discord.setAdminChannelId}
+              onLogChannelIdChange={data.discord.setLogChannelId}
+              onAddUserChannelId={data.discord.addUserChannelId}
+              onRemoveUserChannelId={data.discord.removeUserChannelId}
             />
           )}
         </div>

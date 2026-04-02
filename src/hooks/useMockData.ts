@@ -53,8 +53,9 @@ export function useMockData() {
   // Discord
   const [discordData, setDiscordData] = useState<DiscordPageData>({
     botToken: '',
-    adminRoleId: '',
-    channelIds: ['1234567890', '0987654321'],
+    adminChannelId: '',
+    logChannelId: '',
+    userChannelIds: ['1234567890', '0987654321'],
   });
 
   return {
@@ -82,12 +83,14 @@ export function useMockData() {
       data: discordData,
       setBotToken: (token: string) =>
         setDiscordData((d) => ({ ...d, botToken: token })),
-      setAdminRoleId: (id: string) =>
-        setDiscordData((d) => ({ ...d, adminRoleId: id })),
-      addChannelId: (id: string) =>
-        setDiscordData((d) => ({ ...d, channelIds: [...d.channelIds, id] })),
-      removeChannelId: (index: number) =>
-        setDiscordData((d) => ({ ...d, channelIds: d.channelIds.filter((_, i) => i !== index) })),
+      setAdminChannelId: (id: string) =>
+        setDiscordData((d) => ({ ...d, adminChannelId: id })),
+      setLogChannelId: (id: string) =>
+        setDiscordData((d) => ({ ...d, logChannelId: id })),
+      addUserChannelId: (id: string) =>
+        setDiscordData((d) => ({ ...d, userChannelIds: [...d.userChannelIds, id] })),
+      removeUserChannelId: (index: number) =>
+        setDiscordData((d) => ({ ...d, userChannelIds: d.userChannelIds.filter((_, i) => i !== index) })),
     },
   };
 }

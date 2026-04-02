@@ -45,6 +45,7 @@ export interface SkillToolItem {
 
 export interface DiscordPageData {
   botToken: string;
-  adminRoleId: string;
-  channelIds: string[];
+  adminChannelId: string;
+  logChannelId: string;
+  userChannelIds: string[];
 }

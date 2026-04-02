@@ -193,26 +193,34 @@ export function useBackendData() {
           return updated;
         });
       },
-      setAdminRoleId: (id: string) => {
+      setAdminChannelId: (id: string) => {
         setDiscordData(d => {
           if (!d) return d;
-          const updated = { ...d, adminRoleId: id };
+          const updated = { ...d, adminChannelId: id };
           saveDiscord(updated);
           return updated;
         });
       },
-      addChannelId: (id: string) => {
+      setLogChannelId: (id: string) => {
         setDiscordData(d => {
           if (!d) return d;
-          const updated = { ...d, channelIds: [...d.channelIds, id] };
+          const updated = { ...d, logChannelId: id };
           saveDiscord(updated);
           return updated;
         });
       },
-      removeChannelId: (index: number) => {
+      addUserChannelId: (id: string) => {
         setDiscordData(d => {
           if (!d) return d;
-          const updated = { ...d, channelIds: d.channelIds.filter((_, i) => i !== index) };
+          const updated = { ...d, userChannelIds: [...d.userChannelIds, id] };
+          saveDiscord(updated);
+          return updated;
+        });
+      },
+      removeUserChannelId: (index: number) => {
+        setDiscordData(d => {
+          if (!d) return d;
+          const updated = { ...d, userChannelIds: d.userChannelIds.filter((_, i) => i !== index) };
           saveDiscord(updated);
           return updated;
         });
