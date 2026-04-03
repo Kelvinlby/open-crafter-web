@@ -1,4 +1,4 @@
-export type TabId = 'model' | 'runtime' | 'skill' | 'tool' | 'discord';
+export type TabId = 'model' | 'runtime' | 'skill' | 'tool' | 'api';
 
 export interface HyperparamConfig {
   id: string;
@@ -43,9 +43,13 @@ export interface SkillToolItem {
   description: string;
 }
 
-export interface DiscordPageData {
-  botToken: string;
-  adminChannelId: string;
-  logChannelId: string;
-  userChannelIds: string[];
+export interface ApiKey {
+  name: string;
+  key: string;
+}
+
+export interface ApiPageData {
+  acceptedIpRange: string;
+  port: string;
+  apiKeys: ApiKey[];
 }

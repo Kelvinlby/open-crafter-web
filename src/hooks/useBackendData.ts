@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { ModelPageData, ModelOption, RuntimePageData, SkillToolItem, DiscordPageData } from '../types';
+import type { ModelPageData, ModelOption, RuntimePageData, SkillToolItem, ApiPageData } from '../types';
 
 async function postJson(url: string, body: unknown): Promise<boolean> {
   try {
@@ -24,7 +24,7 @@ export function useBackendData() {
   const [runtimeData, setRuntimeData] = useState<RuntimePageData | null>(null);
   const [skillItems, setSkillItems] = useState<SkillToolItem[] | null>(null);
   const [toolItems, setToolItems] = useState<SkillToolItem[] | null>(null);
-  const [discordData, setDiscordData] = useState<DiscordPageData | null>(null);
+  const [apiData, setApiData] = useState<ApiPageData | null>(null);
   const [selectedSkillId, setSelectedSkillId] = useState('');
   const [selectedToolId, setSelectedToolId] = useState('');
 
@@ -51,10 +51,10 @@ export function useBackendData() {
       })
       .catch(err => console.error('Failed to fetch tools:', err));
 
-    fetch('/api/discord')
+    fetch('/api/config')
       .then(r => r.json())
-      .then(setDiscordData)
-      .catch(err => console.error('Failed to fetch discord data:', err));
+      .then(setApiData)
+      .catch(err => console.error('Failed to fetch api config:', err));
   }, []);
 
   // Polling for runtime data every 500ms
@@ -114,17 +114,17 @@ export function useBackendData() {
     }, 300);
   }, []);
 
-  // Debounced save for discord config
-  const discordSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const saveDiscord = useCallback((data: DiscordPageData) => {
-    if (discordSaveRef.current) clearTimeout(discordSaveRef.current);
-    discordSaveRef.current = setTimeout(() => {
-      postJson('/api/discord/save', data);
+  // Debounced save for api config (ip range + port only)
+  const apiSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveApiConfig = useCallback((data: Pick<ApiPageData, 'acceptedIpRange' | 'port'>) => {
+    if (apiSaveRef.current) clearTimeout(apiSaveRef.current);
+    apiSaveRef.current = setTimeout(() => {
+      postJson('/api/config/save', data);
     }, 300);
   }, []);
 
   // Loading state
-  const loading = !modelData || !runtimeData || !skillItems || !toolItems || !discordData;
+  const loading = !modelData || !runtimeData || !skillItems || !toolItems || !apiData;
 
   // Return the same shape as useMockData
   return {
@@ -183,46 +183,37 @@ export function useBackendData() {
     },
     skills: { items: skillItems!, selectedId: selectedSkillId, setSelectedId: setSelectedSkillId },
     tools: { items: toolItems!, selectedId: selectedToolId, setSelectedId: setSelectedToolId },
-    discord: {
-      data: discordData!,
-      setBotToken: (token: string) => {
-        setDiscordData(d => {
+    api: {
+      data: apiData!,
+      setIpRange: (value: string) => {
+        setApiData(d => {
           if (!d) return d;
-          const updated = { ...d, botToken: token };
-          saveDiscord(updated);
+          const updated = { ...d, acceptedIpRange: value };
+          saveApiConfig({ acceptedIpRange: value, port: d.port });
           return updated;
         });
       },
-      setAdminChannelId: (id: string) => {
-        setDiscordData(d => {
+      setPort: (value: string) => {
+        setApiData(d => {
           if (!d) return d;
-          const updated = { ...d, adminChannelId: id };
-          saveDiscord(updated);
+          saveApiConfig({ acceptedIpRange: d.acceptedIpRange, port: value });
+          return { ...d, port: value };
+        });
+      },
+      addApiKey: (name: string, key: string) => {
+        setApiData(d => {
+          if (!d) return d;
+          const updated = { ...d, apiKeys: [...d.apiKeys, { name, key }] };
+          postJson('/api/config/api-key', { name, key });
           return updated;
         });
       },
-      setLogChannelId: (id: string) => {
-        setDiscordData(d => {
+      removeApiKey: (index: number) => {
+        setApiData(d => {
           if (!d) return d;
-          const updated = { ...d, logChannelId: id };
-          saveDiscord(updated);
-          return updated;
-        });
-      },
-      addUserChannelId: (id: string) => {
-        setDiscordData(d => {
-          if (!d) return d;
-          const updated = { ...d, userChannelIds: [...d.userChannelIds, id] };
-          saveDiscord(updated);
-          return updated;
-        });
-      },
-      removeUserChannelId: (index: number) => {
-        setDiscordData(d => {
-          if (!d) return d;
-          const updated = { ...d, userChannelIds: d.userChannelIds.filter((_, i) => i !== index) };
-          saveDiscord(updated);
-          return updated;
+          fetch(`/api/config/api-key/${index}`, { method: 'DELETE' })
+            .catch(err => console.error('Failed to delete api key:', err));
+          return { ...d, apiKeys: d.apiKeys.filter((_, i) => i !== index) };
         });
       },
     },

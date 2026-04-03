@@ -5,7 +5,7 @@ import { NavRail } from './components/NavRail';
 import { ModelPage } from './pages/ModelPage';
 import { RuntimePage } from './pages/RuntimePage';
 import { SkillToolPage } from './pages/SkillToolPage';
-import { DiscordPage } from './pages/DiscordPage';
+import { ApiPage } from './pages/ApiPage';
 import './App.css';
 
 function App() {
@@ -52,14 +52,13 @@ function App() {
               onSelect={data.tools.setSelectedId}
             />
           )}
-          {activeTab === 'discord' && (
-            <DiscordPage
-              data={data.discord.data}
-              onBotTokenChange={data.discord.setBotToken}
-              onAdminChannelIdChange={data.discord.setAdminChannelId}
-              onLogChannelIdChange={data.discord.setLogChannelId}
-              onAddUserChannelId={data.discord.addUserChannelId}
-              onRemoveUserChannelId={data.discord.removeUserChannelId}
+          {activeTab === 'api' && (
+            <ApiPage
+              data={data.api.data}
+              onIpRangeChange={data.api.setIpRange}
+              onPortChange={data.api.setPort}
+              onAddApiKey={data.api.addApiKey}
+              onRemoveApiKey={data.api.removeApiKey}
             />
           )}
         </div>

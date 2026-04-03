@@ -7,7 +7,7 @@ const tabs: { id: TabId; label: string; icon: string }[] = [
   { id: 'runtime', label: 'Runtime', icon: 'dns' },
   { id: 'skill', label: 'Skill', icon: 'view_timeline' },
   { id: 'tool', label: 'Tool', icon: 'build' },
-  { id: 'discord', label: 'Discord', icon: 'chat' },
+  { id: 'api', label: 'API', icon: 'api' },
 ];
 
 interface NavRailProps {

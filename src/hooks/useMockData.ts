@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ModelPageData, RuntimePageData, SkillToolItem, DiscordPageData } from '../types';
+import type { ModelPageData, RuntimePageData, SkillToolItem, ApiPageData } from '../types';
 
 export function useMockData() {
   // Model
@@ -50,12 +50,11 @@ export function useMockData() {
   ]);
   const [selectedToolId, setSelectedToolId] = useState('chat');
 
-  // Discord
-  const [discordData, setDiscordData] = useState<DiscordPageData>({
-    botToken: '',
-    adminChannelId: '',
-    logChannelId: '',
-    userChannelIds: ['1234567890', '0987654321'],
+  // API Config
+  const [apiData, setApiData] = useState<ApiPageData>({
+    acceptedIpRange: '0.0.0.0/0',
+    port: '8080',
+    apiKeys: [{ name: 'dev-key', key: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2' }],
   });
 
   return {
@@ -79,18 +78,12 @@ export function useMockData() {
     runtime: { data: runtimeData },
     skills: { items: skillItems, selectedId: selectedSkillId, setSelectedId: setSelectedSkillId },
     tools: { items: toolItems, selectedId: selectedToolId, setSelectedId: setSelectedToolId },
-    discord: {
-      data: discordData,
-      setBotToken: (token: string) =>
-        setDiscordData((d) => ({ ...d, botToken: token })),
-      setAdminChannelId: (id: string) =>
-        setDiscordData((d) => ({ ...d, adminChannelId: id })),
-      setLogChannelId: (id: string) =>
-        setDiscordData((d) => ({ ...d, logChannelId: id })),
-      addUserChannelId: (id: string) =>
-        setDiscordData((d) => ({ ...d, userChannelIds: [...d.userChannelIds, id] })),
-      removeUserChannelId: (index: number) =>
-        setDiscordData((d) => ({ ...d, userChannelIds: d.userChannelIds.filter((_, i) => i !== index) })),
+    api: {
+      data: apiData,
+      setIpRange: (value: string) => setApiData(d => ({ ...d, acceptedIpRange: value })),
+      setPort: (value: string) => setApiData(d => ({ ...d, port: value })),
+      addApiKey: (name: string, key: string) => setApiData(d => ({ ...d, apiKeys: [...d.apiKeys, { name, key }] })),
+      removeApiKey: (index: number) => setApiData(d => ({ ...d, apiKeys: d.apiKeys.filter((_, i) => i !== index) })),
     },
   };
 }
