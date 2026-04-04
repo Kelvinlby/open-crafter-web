@@ -18,20 +18,10 @@ export function ChatPage() {
     }
   }, [input]);
 
-  // Escape key to go back
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Escape') {
-        navigate('/');
-      }
-    },
-    [navigate],
-  );
-
   // Check if input has meaningful content (not just whitespace/newlines)
   const hasValidInput = input.trim().length > 0;
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!hasValidInput || isSubmitting) return;
 
     const trimmedInput = input.trim();
@@ -57,7 +47,27 @@ export function ChatPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [hasValidInput, isSubmitting, input]);
+
+  // Escape key to go back; Enter key handling for embedded browser
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Escape') {
+        navigate('/');
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        // Plain Enter: submit
+        if (!e.shiftKey && !e.ctrlKey) {
+          e.preventDefault();
+          handleSubmit();
+        }
+        // Shift+Enter or Ctrl+Enter: let default behavior insert newline
+      }
+    },
+    [navigate, handleSubmit],
+  );
 
   return (
     <div className="chat-page">
@@ -71,6 +81,7 @@ export function ChatPage() {
             onKeyDown={handleKeyDown}
             placeholder="What would you like to craft?"
             rows={1}
+            autoFocus
           />
           {hasValidInput && (
             <div className="chat-toolbar">

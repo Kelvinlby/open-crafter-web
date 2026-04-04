@@ -3,7 +3,7 @@ import type { TabId } from '../types';
 import './NavRail.css';
 
 const tabs: { id: TabId; label: string; icon: string }[] = [
-  { id: 'model', label: 'Model', icon: 'token' },
+  { id: 'model', label: 'Model', icon: 'package_2' },
   { id: 'runtime', label: 'Runtime', icon: 'dns' },
   { id: 'skill', label: 'Skill', icon: 'view_timeline' },
   { id: 'tool', label: 'Tool', icon: 'build' },

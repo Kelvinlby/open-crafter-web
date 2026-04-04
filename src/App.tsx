@@ -12,7 +12,7 @@ import './App.css';
 
 function HomePage() {
   const [activeTab, setActiveTab] = useState<TabId>('model');
-  const data = useBackendData();
+  const data = useBackendData(activeTab);
 
 
   if (data.loading) {

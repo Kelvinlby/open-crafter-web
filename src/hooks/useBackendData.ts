@@ -19,7 +19,7 @@ async function postJson(url: string, body: unknown): Promise<boolean> {
   }
 }
 
-export function useBackendData() {
+export function useBackendData(activeTab: string) {
   const [modelData, setModelData] = useState<ModelPageData | null>(null);
   const [runtimeData, setRuntimeData] = useState<RuntimePageData | null>(null);
   const [skillItems, setSkillItems] = useState<SkillToolItem[] | null>(null);
@@ -57,7 +57,7 @@ export function useBackendData() {
       .catch(err => console.error('Failed to fetch api config:', err));
   }, []);
 
-  // Polling for runtime data every 500ms
+  // Polling for runtime data every 500ms, only when runtime tab is active
   useEffect(() => {
     const fetchRuntime = () =>
       fetch('/api/runtime')
@@ -65,10 +65,11 @@ export function useBackendData() {
         .then(setRuntimeData)
         .catch(err => console.error('Failed to fetch runtime data:', err));
 
-    fetchRuntime(); // initial fetch
+    fetchRuntime(); // always fetch once for initial data / tab switch
+    if (activeTab !== 'runtime') return;
     const interval = setInterval(fetchRuntime, 500);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeTab]);
 
   // Refetch model data from backend to get updated hyperparams
   const reloadModelData = useCallback(async () => {
@@ -136,12 +137,11 @@ export function useBackendData() {
         scanModels(path);
       },
       setSelectedModel: async (model: string) => {
-        setModelData(d => {
-          if (!d) return d;
-          // Persist selection with current modelPath
-          postJson('/api/model/save', { modelPath: d.modelPath, selectedModel: model });
-          return { ...d, selectedModel: model };
-        });
+        if (!modelData) return;
+        // Optimistic update
+        setModelData(d => d ? { ...d, selectedModel: model } : d);
+        // Await save before reloading — otherwise the GET returns stale data
+        await postJson('/api/model/save', { modelPath: modelData.modelPath, selectedModel: model });
         // Reload model data to get updated hyperparams for the selected model
         await reloadModelData();
       },
