@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import type { TabId } from './types';
 import { useBackendData } from './hooks/useBackendData';
 import { NavRail } from './components/NavRail';
@@ -6,9 +7,10 @@ import { ModelPage } from './pages/ModelPage';
 import { RuntimePage } from './pages/RuntimePage';
 import { SkillToolPage } from './pages/SkillToolPage';
 import { ApiPage } from './pages/ApiPage';
+import { ChatPage } from './pages/ChatPage';
 import './App.css';
 
-function App() {
+function HomePage() {
   const [activeTab, setActiveTab] = useState<TabId>('model');
   const data = useBackendData();
 
@@ -64,6 +66,16 @@ function App() {
         </div>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/chat" element={<ChatPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
