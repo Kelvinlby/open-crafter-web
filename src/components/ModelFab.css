@@ -60,8 +60,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
 }
 
 .model-fab__icon--spin {
   animation: fab-spin 1s linear infinite;
+  transform-origin: center center;
 }
