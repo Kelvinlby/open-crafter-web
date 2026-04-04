@@ -1,23 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { ModelPageData, ModelOption, RuntimePageData, SkillToolItem, ApiPageData } from '../types';
-
-async function postJson(url: string, body: unknown): Promise<boolean> {
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      console.error(`POST ${url} failed with status ${response.status}: ${response.statusText}`);
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error(`Failed to POST ${url}:`, err);
-    return false;
-  }
-}
+import { postJson, getJson, API, DEBOUNCE_MS, POLL_INTERVAL_MS } from '../api';
 
 export function useBackendData(activeTab: string) {
   const [modelData, setModelData] = useState<ModelPageData | null>(null);
@@ -27,109 +10,125 @@ export function useBackendData(activeTab: string) {
   const [apiData, setApiData] = useState<ApiPageData | null>(null);
   const [selectedSkillId, setSelectedSkillId] = useState('');
   const [selectedToolId, setSelectedToolId] = useState('');
+  const [fetchError, setFetchError] = useState(false);
 
-  // One-time fetches for static data
+  // One-time parallel fetch for all static data
   useEffect(() => {
-    fetch('/api/model')
-      .then(r => r.json())
-      .then(setModelData)
-      .catch(err => console.error('Failed to fetch model data:', err));
+    let cancelled = false;
 
-    fetch('/api/skills')
-      .then(r => r.json())
-      .then((items) => {
+    Promise.allSettled([
+      getJson<ModelPageData>(API.model),
+      getJson<SkillToolItem[]>(API.skills),
+      getJson<SkillToolItem[]>(API.tools),
+      getJson<ApiPageData>(API.config),
+    ]).then(([modelResult, skillsResult, toolsResult, apiResult]) => {
+      if (cancelled) return;
+
+      let hadError = false;
+
+      if (modelResult.status === 'fulfilled') {
+        setModelData(modelResult.value);
+      } else {
+        console.error('Failed to fetch model data:', modelResult.reason);
+        hadError = true;
+      }
+
+      if (skillsResult.status === 'fulfilled') {
+        const items = skillsResult.value;
         setSkillItems(items);
         if (items.length > 0) setSelectedSkillId(items[0].id);
-      })
-      .catch(err => console.error('Failed to fetch skills:', err));
+      } else {
+        console.error('Failed to fetch skills:', skillsResult.reason);
+        hadError = true;
+      }
 
-    fetch('/api/tools')
-      .then(r => r.json())
-      .then((items) => {
+      if (toolsResult.status === 'fulfilled') {
+        const items = toolsResult.value;
         setToolItems(items);
         if (items.length > 0) setSelectedToolId(items[0].id);
-      })
-      .catch(err => console.error('Failed to fetch tools:', err));
+      } else {
+        console.error('Failed to fetch tools:', toolsResult.reason);
+        hadError = true;
+      }
 
-    fetch('/api/config')
-      .then(r => r.json())
-      .then(setApiData)
-      .catch(err => console.error('Failed to fetch api config:', err));
+      if (apiResult.status === 'fulfilled') {
+        setApiData(apiResult.value);
+      } else {
+        console.error('Failed to fetch api config:', apiResult.reason);
+        hadError = true;
+      }
+
+      if (hadError) setFetchError(true);
+    });
+
+    return () => { cancelled = true; };
   }, []);
 
   // Polling for runtime data every 500ms, only when runtime tab is active
   useEffect(() => {
+    if (activeTab !== 'runtime') return;
+
     const fetchRuntime = () =>
-      fetch('/api/runtime')
-        .then(r => r.json())
+      getJson<RuntimePageData>(API.runtime)
         .then(setRuntimeData)
         .catch(err => console.error('Failed to fetch runtime data:', err));
 
-    fetchRuntime(); // always fetch once for initial data / tab switch
-    if (activeTab !== 'runtime') return;
-    const interval = setInterval(fetchRuntime, 500);
+    fetchRuntime(); // initial fetch when switching to runtime tab
+    const interval = setInterval(fetchRuntime, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [activeTab]);
 
   // Refetch model data from backend to get updated hyperparams
   const reloadModelData = useCallback(async () => {
     try {
-      const response = await fetch('/api/model');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch model data: ${response.statusText}`);
-      }
-      const data = await response.json() as ModelPageData;
+      const data = await getJson<ModelPageData>(API.model);
       setModelData(data);
     } catch (err) {
       console.error('Failed to reload model data:', err);
     }
   }, []);
 
-  // Scan models when model path changes
+  // Scan models when model path changes (debounced)
   const scanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (scanTimerRef.current) clearTimeout(scanTimerRef.current); }, []);
 
   const scanModels = useCallback((path: string) => {
-    if (scanTimerRef.current) {
-      clearTimeout(scanTimerRef.current);
-    }
-    scanTimerRef.current = setTimeout(() => {
-      fetch('/api/model/scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelPath: path }),
-      })
-        .then(r => r.json())
-        .then(async (models: ModelOption[]) => {
-          const selectedModel = models.length > 0 ? models[0].folder : '';
-          setModelData(d => d ? {
-            ...d,
-            availableModels: models,
-            selectedModel,
-          } : d);
-          // Persist model path + auto-selected model
-          await postJson('/api/model/save', { modelPath: path, selectedModel });
-          // Reload model data to get hyperparams for the auto-selected model
-          await reloadModelData();
-        })
-        .catch(err => console.error('Failed to scan models:', err));
-    }, 300);
-  }, []);
+    if (scanTimerRef.current) clearTimeout(scanTimerRef.current);
+    scanTimerRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(API.modelScan, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ modelPath: path }),
+        });
+        const models = await response.json() as ModelOption[];
+        const selectedModel = models.length > 0 ? models[0].folder : '';
+        setModelData(d => d ? { ...d, availableModels: models, selectedModel } : d);
+        await postJson(API.modelSave, { modelPath: path, selectedModel });
+        await reloadModelData();
+      } catch (err) {
+        console.error('Failed to scan models:', err);
+      }
+    }, DEBOUNCE_MS);
+  }, [reloadModelData]);
 
   // Debounced save for api config (ip range + port only)
   const apiSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (apiSaveRef.current) clearTimeout(apiSaveRef.current); }, []);
+
   const saveApiConfig = useCallback((data: Pick<ApiPageData, 'acceptedIpRange' | 'port'>) => {
     if (apiSaveRef.current) clearTimeout(apiSaveRef.current);
     apiSaveRef.current = setTimeout(() => {
-      postJson('/api/config/save', data);
-    }, 300);
+      postJson(API.configSave, data);
+    }, DEBOUNCE_MS);
   }, []);
 
-  // Loading state
-  const loading = !modelData || !runtimeData || !skillItems || !toolItems || !apiData;
+  // Loading: false as soon as error occurs or all initial data arrives (runtime deferred)
+  const loading = !fetchError && (!modelData || !skillItems || !toolItems || !apiData);
 
-  // Return the same shape as useMockData
   return {
     loading,
+    error: fetchError,
     model: {
       data: modelData!,
       setModelPath: (path: string) => {
@@ -138,22 +137,15 @@ export function useBackendData(activeTab: string) {
       },
       setSelectedModel: async (model: string) => {
         if (!modelData) return;
-        // Optimistic update
         setModelData(d => d ? { ...d, selectedModel: model } : d);
-        // Await save before reloading — otherwise the GET returns stale data
-        await postJson('/api/model/save', { modelPath: modelData.modelPath, selectedModel: model });
-        // Reload model data to get updated hyperparams for the selected model
+        await postJson(API.modelSave, { modelPath: modelData.modelPath, selectedModel: model });
         await reloadModelData();
       },
       updateHyperparam: (id: string, value: number) => {
         setModelData(d => {
           if (!d) return d;
-          // Persist hyperparameter change
-          postJson('/api/model/hyperparam', { paramId: id, value });
-          return {
-            ...d,
-            hyperparams: d.hyperparams.map(h => h.id === id ? { ...h, value } : h),
-          };
+          postJson(API.modelHyperparam, { paramId: id, value });
+          return { ...d, hyperparams: d.hyperparams.map(h => h.id === id ? { ...h, value } : h) };
         });
       },
       resetHyperparam: (id: string) => {
@@ -161,22 +153,17 @@ export function useBackendData(activeTab: string) {
           if (!d) return d;
           const param = d.hyperparams.find(h => h.id === id);
           if (!param) return d;
-          // Persist hyperparameter reset
-          postJson('/api/model/hyperparam', { paramId: id, value: param.defaultValue });
-          return {
-            ...d,
-            hyperparams: d.hyperparams.map(h => h.id === id ? { ...h, value: h.defaultValue } : h),
-          };
+          postJson(API.modelHyperparam, { paramId: id, value: param.defaultValue });
+          return { ...d, hyperparams: d.hyperparams.map(h => h.id === id ? { ...h, value: h.defaultValue } : h) };
         });
       },
     },
     runtime: {
-      data: runtimeData!,
+      data: runtimeData,
       setSelectedDevice: (device: string) => {
         setRuntimeData(d => {
           if (!d) return d;
-          // Persist device selection
-          postJson('/api/runtime/save', { inferenceDevice: device });
+          postJson(API.runtimeSave, { inferenceDevice: device });
           return { ...d, selectedDevice: device };
         });
       },
@@ -203,15 +190,14 @@ export function useBackendData(activeTab: string) {
       addApiKey: (name: string, key: string) => {
         setApiData(d => {
           if (!d) return d;
-          const updated = { ...d, apiKeys: [...d.apiKeys, { name, key }] };
-          postJson('/api/config/api-key', { name, key });
-          return updated;
+          postJson(API.configApiKey, { name, key });
+          return { ...d, apiKeys: [...d.apiKeys, { name, key }] };
         });
       },
       removeApiKey: (index: number) => {
         setApiData(d => {
           if (!d) return d;
-          fetch(`/api/config/api-key/${index}`, { method: 'DELETE' })
+          fetch(`${API.configApiKey}/${index}`, { method: 'DELETE' })
             .catch(err => console.error('Failed to delete api key:', err));
           return { ...d, apiKeys: d.apiKeys.filter((_, i) => i !== index) };
         });

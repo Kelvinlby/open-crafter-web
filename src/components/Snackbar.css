@@ -1,0 +1,50 @@
+@keyframes snackbar-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-xs);
+  padding: 14px 8px 14px 16px;
+  min-width: 288px;
+  max-width: 568px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 9999;
+  box-shadow: var(--md-sys-elevation-2);
+  animation: snackbar-in 200ms var(--md-sys-motion-easing) both;
+}
+
+.snackbar__text {
+  flex: 1;
+  font: var(--md-sys-typescale-body);
+}
+
+.snackbar__dismiss {
+  background: transparent;
+  border: none;
+  color: var(--md-sys-color-primary);
+  font: var(--md-sys-typescale-label);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--md-sys-shape-corner-xs);
+  white-space: nowrap;
+  transition: background var(--md-sys-motion-duration) var(--md-sys-motion-easing);
+}
+
+.snackbar__dismiss:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+}

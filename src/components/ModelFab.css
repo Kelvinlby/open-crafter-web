@@ -1,0 +1,67 @@
+@keyframes fab-spin {
+  to { transform: rotate(360deg); }
+}
+
+.model-fab {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--md-sys-shape-corner-lg);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: var(--md-sys-elevation-2);
+  transition:
+    background var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    color var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    box-shadow var(--md-sys-motion-duration) var(--md-sys-motion-easing),
+    transform 120ms ease;
+}
+
+.model-fab:not(:disabled):hover {
+  transform: scale(1.04);
+  box-shadow: var(--md-sys-elevation-2), 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.model-fab:not(:disabled):active {
+  transform: scale(0.92);
+}
+
+.model-fab:disabled {
+  cursor: default;
+}
+
+/* unloaded — warm amber: "ready, waiting to be used" */
+.model-fab--unloaded {
+  background: #4a3800;
+  color: #ffd966;
+}
+
+/* busy (loading / unloading) — muted neutral: recedes visually */
+.model-fab--busy {
+  background: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* loaded — cool teal: "active, running" */
+.model-fab--loaded {
+  background: #003a30;
+  color: #6fcfb8;
+}
+
+.model-fab__icon {
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.model-fab__icon--spin {
+  animation: fab-spin 1s linear infinite;
+}

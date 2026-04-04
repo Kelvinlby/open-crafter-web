@@ -58,6 +58,8 @@ export function useMockData() {
   });
 
   return {
+    loading: false,
+    error: false,
     model: {
       data: modelData,
       setModelPath: (path: string) =>

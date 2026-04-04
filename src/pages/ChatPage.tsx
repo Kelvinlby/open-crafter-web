@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'material-symbols/outlined.css';
+import { API } from '../api';
 import './ChatPage.css';
 
 export function ChatPage() {
@@ -28,7 +29,7 @@ export function ChatPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/instruct/', {
+      const response = await fetch(API.instruct, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,15 +59,29 @@ export function ChatPage() {
       }
 
       if (e.key === 'Enter') {
-        // Plain Enter: submit
-        if (!e.shiftKey && !e.ctrlKey) {
-          e.preventDefault();
+        e.preventDefault(); // always prevent default for cross-browser consistency
+
+        if (e.shiftKey || e.ctrlKey) {
+          // Shift+Enter or Ctrl+Enter: submit
           handleSubmit();
+        } else {
+          // Plain Enter: insert newline manually (works in embedded Minecraft browser too)
+          const textarea = textareaRef.current;
+          if (textarea) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const newValue = input.substring(0, start) + '\n' + input.substring(end);
+            setInput(newValue);
+            // Restore cursor position after React re-render
+            requestAnimationFrame(() => {
+              textarea.selectionStart = start + 1;
+              textarea.selectionEnd = start + 1;
+            });
+          }
         }
-        // Shift+Enter or Ctrl+Enter: let default behavior insert newline
       }
     },
-    [navigate, handleSubmit],
+    [navigate, handleSubmit, input],
   );
 
   return (

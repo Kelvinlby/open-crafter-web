@@ -41,7 +41,7 @@ export function ApiPage({ data, onIpRangeChange, onPortChange, onAddApiKey, onRe
         <span className="api-key-list-label">API Keys</span>
         <div className="api-key-items">
           {data.apiKeys.map((item, i) => (
-            <div key={i} className="api-key-item">
+            <div key={item.name} className="api-key-item">
               <span className="api-key-name">{item.name}</span>
               <span className="api-key-value">{item.key}</span>
               <IconButton onClick={() => onRemoveApiKey(i)} title="Remove">&#x2715;</IconButton>

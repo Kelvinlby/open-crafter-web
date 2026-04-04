@@ -1,4 +1,5 @@
 export type TabId = 'model' | 'runtime' | 'skill' | 'tool' | 'api';
+export type ModelStatus = 'unloaded' | 'loading' | 'unloading' | 'loaded';
 
 export interface HyperparamConfig {
   id: string;
