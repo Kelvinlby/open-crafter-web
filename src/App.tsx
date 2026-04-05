@@ -56,6 +56,7 @@ function HomePage({ modelStatus, onFabClick }: FabProps) {
                 items={data.skills.items}
                 selectedId={data.skills.selectedId}
                 onSelect={data.skills.setSelectedId}
+                onToggle={data.skills.toggle}
               />
             )}
             {activeTab === 'tool' && (
@@ -63,6 +64,7 @@ function HomePage({ modelStatus, onFabClick }: FabProps) {
                 items={data.tools.items}
                 selectedId={data.tools.selectedId}
                 onSelect={data.tools.setSelectedId}
+                onToggle={data.tools.toggle}
               />
             )}
             {activeTab === 'api' && (

@@ -42,6 +42,7 @@ export interface SkillToolItem {
   title: string;
   version: string;
   description: string;
+  enabled: boolean;
 }
 
 export interface ApiKey {

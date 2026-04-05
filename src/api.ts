@@ -14,6 +14,8 @@ export const API = {
   runtimeSave:     '/api/runtime/save',
   skills:          '/api/skills',
   tools:           '/api/tools',
+  skillToggle: (id: string) => `/api/skills/${id}/toggle`,
+  toolToggle:  (id: string) => `/api/tools/${id}/toggle`,
   config:          '/api/config',
   configSave:      '/api/config/save',
   configApiKey:    '/api/config/api-key',

@@ -12,16 +12,14 @@ export function useBackendData(activeTab: string) {
   const [selectedToolId, setSelectedToolId] = useState('');
   const [fetchError, setFetchError] = useState(false);
 
-  // One-time parallel fetch for all static data
+  // One-time fetch for model and api config
   useEffect(() => {
     let cancelled = false;
 
     Promise.allSettled([
       getJson<ModelPageData>(API.model),
-      getJson<SkillToolItem[]>(API.skills),
-      getJson<SkillToolItem[]>(API.tools),
       getJson<ApiPageData>(API.config),
-    ]).then(([modelResult, skillsResult, toolsResult, apiResult]) => {
+    ]).then(([modelResult, apiResult]) => {
       if (cancelled) return;
 
       let hadError = false;
@@ -30,24 +28,6 @@ export function useBackendData(activeTab: string) {
         setModelData(modelResult.value);
       } else {
         console.error('Failed to fetch model data:', modelResult.reason);
-        hadError = true;
-      }
-
-      if (skillsResult.status === 'fulfilled') {
-        const items = skillsResult.value;
-        setSkillItems(items);
-        if (items.length > 0) setSelectedSkillId(items[0].id);
-      } else {
-        console.error('Failed to fetch skills:', skillsResult.reason);
-        hadError = true;
-      }
-
-      if (toolsResult.status === 'fulfilled') {
-        const items = toolsResult.value;
-        setToolItems(items);
-        if (items.length > 0) setSelectedToolId(items[0].id);
-      } else {
-        console.error('Failed to fetch tools:', toolsResult.reason);
         hadError = true;
       }
 
@@ -63,6 +43,40 @@ export function useBackendData(activeTab: string) {
 
     return () => { cancelled = true; };
   }, []);
+
+  // Fetch skills whenever the skill tab is active
+  useEffect(() => {
+    if (activeTab !== 'skill') return;
+    let cancelled = false;
+
+    getJson<SkillToolItem[]>(API.skills).then((items) => {
+      if (cancelled) return;
+      setSkillItems(items);
+      setSelectedSkillId((prev) => (prev && items.some((i) => i.id === prev)) ? prev : (items[0]?.id ?? ''));
+    }).catch((err) => {
+      console.error('Failed to fetch skills:', err);
+      setFetchError(true);
+    });
+
+    return () => { cancelled = true; };
+  }, [activeTab]);
+
+  // Fetch tools whenever the tool tab is active
+  useEffect(() => {
+    if (activeTab !== 'tool') return;
+    let cancelled = false;
+
+    getJson<SkillToolItem[]>(API.tools).then((items) => {
+      if (cancelled) return;
+      setToolItems(items);
+      setSelectedToolId((prev) => (prev && items.some((i) => i.id === prev)) ? prev : (items[0]?.id ?? ''));
+    }).catch((err) => {
+      console.error('Failed to fetch tools:', err);
+      setFetchError(true);
+    });
+
+    return () => { cancelled = true; };
+  }, [activeTab]);
 
   // Polling for runtime data every 500ms, only when runtime tab is active
   useEffect(() => {
@@ -123,8 +137,8 @@ export function useBackendData(activeTab: string) {
     }, DEBOUNCE_MS);
   }, []);
 
-  // Loading: false as soon as error occurs or all initial data arrives (runtime deferred)
-  const loading = !fetchError && (!modelData || !skillItems || !toolItems || !apiData);
+  // Loading: false as soon as error occurs or initial data arrives (skills/tools/runtime are deferred)
+  const loading = !fetchError && (!modelData || !apiData);
 
   return {
     loading,
@@ -168,8 +182,24 @@ export function useBackendData(activeTab: string) {
         });
       },
     },
-    skills: { items: skillItems!, selectedId: selectedSkillId, setSelectedId: setSelectedSkillId },
-    tools: { items: toolItems!, selectedId: selectedToolId, setSelectedId: setSelectedToolId },
+    skills: {
+      items: skillItems ?? [],
+      selectedId: selectedSkillId,
+      setSelectedId: setSelectedSkillId,
+      toggle: (id: string, enabled: boolean) => {
+        setSkillItems(items => items?.map(i => i.id === id ? { ...i, enabled } : i) ?? items);
+        postJson(API.skillToggle(id), { enabled });
+      },
+    },
+    tools: {
+      items: toolItems ?? [],
+      selectedId: selectedToolId,
+      setSelectedId: setSelectedToolId,
+      toggle: (id: string, enabled: boolean) => {
+        setToolItems(items => items?.map(i => i.id === id ? { ...i, enabled } : i) ?? items);
+        postJson(API.toolToggle(id), { enabled });
+      },
+    },
     api: {
       data: apiData!,
       setIpRange: (value: string) => {

@@ -33,20 +33,20 @@ export function useMockData() {
 
   // Skills
   const [skillItems] = useState<SkillToolItem[]>([
-    { id: 'pathfinding', title: 'Pathfinding', version: '1.2.0', description: 'A* pathfinding with dynamic obstacle avoidance. Supports 3D navigation mesh traversal for complex terrain including water, lava, and scaffolding. Includes jump-sprint optimization and elytra flight paths.' },
-    { id: 'building', title: 'Building', version: '0.8.1', description: 'Schematic-based building with automatic material gathering. Supports NBT structure files and litematica schematics. Includes scaffolding placement and block-by-block verification.' },
-    { id: 'combat', title: 'Combat', version: '1.0.3', description: 'PvE combat with mob targeting, shield blocking, and bow aiming. Supports critical hits, sweep attacks, and potion usage. Includes flee behavior when health is low.' },
-    { id: 'farming', title: 'Farming', version: '1.1.0', description: 'Automated crop farming with replanting. Supports wheat, carrots, potatoes, beetroot, and nether wart. Includes bone meal optimization and harvest timing.' },
-    { id: 'mining', title: 'Mining', version: '2.0.0', description: 'Strip mining and branch mining with ore detection. Supports fortune and silk touch tool selection. Includes torch placement and lava/water hazard avoidance.' },
+    { id: 'pathfinding', title: 'Pathfinding', version: '1.2.0', enabled: true, description: 'A* pathfinding with dynamic obstacle avoidance. Supports 3D navigation mesh traversal for complex terrain including water, lava, and scaffolding. Includes jump-sprint optimization and elytra flight paths.' },
+    { id: 'building', title: 'Building', version: '0.8.1', enabled: true, description: 'Schematic-based building with automatic material gathering. Supports NBT structure files and litematica schematics. Includes scaffolding placement and block-by-block verification.' },
+    { id: 'combat', title: 'Combat', version: '1.0.3', enabled: false, description: 'PvE combat with mob targeting, shield blocking, and bow aiming. Supports critical hits, sweep attacks, and potion usage. Includes flee behavior when health is low.' },
+    { id: 'farming', title: 'Farming', version: '1.1.0', enabled: true, description: 'Automated crop farming with replanting. Supports wheat, carrots, potatoes, beetroot, and nether wart. Includes bone meal optimization and harvest timing.' },
+    { id: 'mining', title: 'Mining', version: '2.0.0', enabled: true, description: 'Strip mining and branch mining with ore detection. Supports fortune and silk touch tool selection. Includes torch placement and lava/water hazard avoidance.' },
   ]);
   const [selectedSkillId, setSelectedSkillId] = useState('pathfinding');
 
   // Tools
   const [toolItems] = useState<SkillToolItem[]>([
-    { id: 'chat', title: 'Chat', version: '1.0.0', description: 'Send and receive in-game chat messages. Supports whisper, party, and global channels. Includes message formatting and command execution.' },
-    { id: 'inventory', title: 'Inventory', version: '1.3.2', description: 'Inspect and manage player inventory. Supports item sorting, crafting recipe lookup, and container interaction (chests, furnaces, brewing stands).' },
-    { id: 'world', title: 'World Info', version: '1.1.0', description: 'Query world state including time, weather, biome, and nearby entities. Supports block scanning in a configurable radius and structure detection.' },
-    { id: 'movement', title: 'Movement', version: '0.9.5', description: 'Low-level movement commands: walk, sprint, jump, sneak, swim. Supports coordinate-based movement and relative direction commands.' },
+    { id: 'chat', title: 'Chat', version: '1.0.0', enabled: true, description: 'Send and receive in-game chat messages. Supports whisper, party, and global channels. Includes message formatting and command execution.' },
+    { id: 'inventory', title: 'Inventory', version: '1.3.2', enabled: true, description: 'Inspect and manage player inventory. Supports item sorting, crafting recipe lookup, and container interaction (chests, furnaces, brewing stands).' },
+    { id: 'world', title: 'World Info', version: '1.1.0', enabled: false, description: 'Query world state including time, weather, biome, and nearby entities. Supports block scanning in a configurable radius and structure detection.' },
+    { id: 'movement', title: 'Movement', version: '0.9.5', enabled: true, description: 'Low-level movement commands: walk, sprint, jump, sneak, swim. Supports coordinate-based movement and relative direction commands.' },
   ]);
   const [selectedToolId, setSelectedToolId] = useState('chat');
 
